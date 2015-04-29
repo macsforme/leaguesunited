@@ -6,11 +6,26 @@
 
 /*
 
-messages
-	import
-update expected table list
 do foreach loops same way (array_keys() only if modifying elements)
 get records by name/bzid, rather than storing them
+team names and message titles have some HTML character codes in them
+consistent use of double versus single quotes
+
+*/
+
+///////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////// Setup ////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/*
+
+This script expects the BZION root directory to be in the same directory as
+itself. To accomplish this, execute the following command in this directory:
+
+$ ln -s /path/to/bzion/directory bzion
+
+When configuring BZION, make sure you enter proper values under the
+bzion->league->duration setting.
 
 */
 
@@ -18,72 +33,16 @@ get records by name/bzid, rather than storing them
 //////////////////////////// BZION Initialization /////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-require_once __DIR__ . "/bzion/bzion-load.php";
+require_once __DIR__."/bzion/bzion-load.php";
 
 $kernel = new AppKernel('prod', FALSE);
 $kernel->boot();
 
 ///////////////////////////////////////////////////////////////////////////////
-//////////////////////////////// Configuration ////////////////////////////////
+//////////////////////////// Script Initialization ////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
-$bzionConfig = Array(
-		'mysqlUsername' => '',
-		'mysqlPassword' => '',
-		'mysqlDatabase' => ''
-	);
-$ducatiConfig = Array(
-		'mysqlUsername' => '',
-		'mysqlPassword' => '',
-		'mysqlDatabase' => ''
-	);
-$guConfig = Array(
-		'mysqlUsername' => '',
-		'mysqlPassword' => '',
-		'mysqlDatabase' => ''
-	);
-
-$ducatiCouncilID = 49557;
-$guCouncilID = 3069;
-
-$adminBZIDs = Array(
-		'1153', // alexanderthegreat
-		'3030', // brad
-		'13', // chestal
-		'9972', // constitution
-		'2229', // kierra
-		'1024', // nth
-		'78', // sn0w_m0nkey
-		'634' // quantum dot
-	);
-$developerBZIDs = Array(
-		'49434', // alezakos
-		'31098', // allejo
-		'34353', // ashvala
-		'180', // blast
-		'22764', // bullet catcher
-		'3438', // catay
-		'5081', // mana
-		'1194', // ts
-		'9736' // tw1sted
-	);
-$copBZIDs = Array(
-		'23895', // ahs3
-		'24948', // contamination
-		'33135', // frank the tank
-		'23360', // hrj
-		'7871', // jadespacy
-		'20154', // kgirl
-		'7098', // leviathan
-		'46452', // lisa
-		'16611', // mopar madness
-		'23620', // neofit
-		'29565', // osta
-		'7307', // plasma kaz
-		'15448', // redwall
-
-	);
-// enter proper values under league->duration in config.yml
+require_once __DIR__."/config.php";
 
 ///////////////////////////////////////////////////////////////////////////////
 ////////////////////////////// Utility Functions //////////////////////////////
@@ -175,8 +134,7 @@ function bbCodeToMarkDown($data) {
 	$data = preg_replace("/\[(?:style|STYLE)[^\]]*?\]\s*((?:.|\n)*?)\s*\[\/(?:style|STYLE)\]/", "*$1*", $data);
 	$data = preg_replace("/\[(?:size|SIZE)[^\]]*?\]\s*((?:.|\n)*?)\s*\[\/(?:size|SIZE)\]/", "*$1*", $data);
 
-	// escape characters that have special meaning to markdown?
-	// \`*_{}[]()#+-.! can be escaped if necessary
+	// escape characters that have special meaning to markdown? characters would be \`*_{}[]()#+-.!
 
 	return $data;
 }
@@ -229,9 +187,50 @@ echo "Done.\n";
 // check for proper tables
 echo "Checking for proper tables... ";
 
-$bzionTables = Array('players');
-$ducatiTables = Array('players');
-$guTables = Array('players');
+$bzionTables = Array(
+		'players',
+		'player_roles',
+		'teams',
+		'matches',
+		'visits',
+		'news_categories',
+		'bans',
+		'news',
+		'groups',
+		'messages',
+		'player_groups',
+		'team_groups',
+		'countries'
+	);
+$ducatiTables = Array(
+		'countries',
+		'players',
+		'players_profile',
+		'teams',
+		'teams_profile',
+		'teams_overview',
+		'matches',
+		'visits',
+		'news',
+		'bans',
+		'messages_storage',
+		'messages_users_connection'
+	);
+$guTables = Array(
+		'countries',
+		'players',
+		'players_profile',
+		'teams',
+		'teams_profile',
+		'teams_overview',
+		'matches',
+		'visits',
+		'newssystem',
+		'pmsystem_msg_storage',
+		'pmsystem_msg_recipients_users',
+		'pmsystem_msg_recipients_teams',
+		'pmsystem_msg_users'
+	);
 
 $queryResult = $bzionConnection->query('SHOW TABLES');
 if(! $queryResult)
@@ -614,9 +613,9 @@ while($resultArray != NULL) {
 
 	$playerList[$bzid]['last_login'] = $resultArray['last_login'];
 
-	$playerList[$bzid]['description'] = bbCodeToMarkDown($resultArray['raw_user_comment']);
+	$playerList[$bzid]['description'] = html_entity_decode(bbCodeToMarkDown($resultArray['raw_user_comment']), ENT_QUOTES);
 
-	$playerList[$bzid]['admin_comments'] = bbCodeToMarkDown($resultArray['raw_admin_comments']);
+	$playerList[$bzid]['admin_comments'] = html_entity_decode(bbCodeToMarkDown($resultArray['raw_admin_comments']), ENT_QUOTES);
 
 	$resultArray = $queryResult->fetch_assoc();
 }
@@ -658,11 +657,11 @@ while($resultArray != NULL) {
 
 	if($playerList[$bzid]['description'] != '')
 		$playerList[$bzid]['description'] .= "\n***\n";
-	$playerList[$bzid]['description'] .= bbCodeToMarkDown($resultArray['raw_user_comment']);
+	$playerList[$bzid]['description'] .= html_entity_decode(bbCodeToMarkDown($resultArray['raw_user_comment']), ENT_QUOTES);
 
 	if($playerList[$bzid]['admin_comments'] != '')
 		$playerList[$bzid]['admin_comments'] .= "\n***\n";
-	$playerList[$bzid]['admin_comments'] .= bbCodeToMarkDown($resultArray['raw_admin_comments']);
+	$playerList[$bzid]['admin_comments'] .= html_entity_decode(bbCodeToMarkDown($resultArray['raw_admin_comments']), ENT_QUOTES);
 
 	$resultArray = $queryResult->fetch_assoc();
 }
@@ -749,7 +748,7 @@ while($resultArray != NULL) {
 
 	$teamList[$teamIndex]['score'] = $resultArray['score'];
 
-	$teamList[$teamIndex]['description'] = bbCodeToMarkDown($resultArray['raw_description']);
+	$teamList[$teamIndex]['description'] = html_entity_decode(bbCodeToMarkDown($resultArray['raw_description']), ENT_QUOTES);
 
 	$resultArray = $queryResult->fetch_assoc();
 }
@@ -786,9 +785,7 @@ while($resultArray != NULL) {
 
 	$teamList[$teamIndex]['score'] = $resultArray['score'];
 
-	if($teamList[$teamIndex]['description'] != '')
-		$teamList[$teamIndex]['description'] .= "\n***\n";
-	$teamList[$teamIndex]['description'] = bbCodeToMarkDown($resultArray['raw_description']);
+	$teamList[$teamIndex]['description'] = html_entity_decode(bbCodeToMarkDown($resultArray['raw_description']), ENT_QUOTES);
 
 	$resultArray = $queryResult->fetch_assoc();
 }
@@ -1043,7 +1040,7 @@ $resultArray = $queryResult->fetch_assoc();
 while($resultArray != NULL) {
 	$bzid = trim($resultArray['bzid']) != '' ? trim($resultArray['bzid']) : $ducatiCouncilID;
 
-	array_push($newsList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => bbCodeToMarkDown($resultArray['raw_announcement']), 'author' => $bzid, 'title' => 'News', 'league' => 'ducati'));
+	array_push($newsList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => html_entity_decode(bbCodeToMarkDown($resultArray['raw_announcement']), ENT_QUOTES), 'author' => $bzid, 'title' => 'News', 'league' => 'ducati'));
 
 	$resultArray = $queryResult->fetch_assoc();
 }
@@ -1057,7 +1054,7 @@ $resultArray = $queryResult->fetch_assoc();
 while($resultArray != NULL) {
 	$bzid = trim($resultArray['bzid']) != '' ? trim($resultArray['bzid']) : $ducatiCouncilID;
 
-	array_push($bansList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => bbCodeToMarkDown($resultArray['raw_announcement']), 'author' => $bzid, 'title' => 'Ban', 'league' => 'ducati'));
+	array_push($bansList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => html_entity_decode(bbCodeToMarkDown($resultArray['raw_announcement']), ENT_QUOTES) , 'author' => $bzid, 'title' => 'Ban', 'league' => 'ducati'));
 
 	$resultArray = $queryResult->fetch_assoc();
 }
@@ -1079,9 +1076,9 @@ while($resultArray != NULL) {
 	}
 
 	if($resultArray['page'] == "News/")
-		array_push($newsList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => bbCodeToMarkDown($resultArray['raw_msg']), 'author' => $bzid, 'title' => bbCodeToMarkDown($resultArray['title']), 'league' => 'GU'));
+		array_push($newsList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => html_entity_decode(bbCodeToMarkDown($resultArray['raw_msg']), ENT_QUOTES), 'author' => $bzid, 'title' => html_entity_decode($resultArray['title'], ENT_QUOTES), 'league' => 'GU'));
 	else if($resultArray['page'] == "Bans/")
-		array_push($bansList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => bbCodeToMarkDown($resultArray['raw_msg']), 'author' => $bzid, 'title' => bbCodeToMarkDown($resultArray['title']), 'league' => 'GU'));
+		array_push($bansList, Array('timestamp' => strtotime($resultArray['timestamp']), 'text' => html_entity_decode(bbCodeToMarkDown($resultArray['raw_msg']), ENT_QUOTES), 'author' => $bzid, 'title' => html_entity_decode($resultArray['title'], ENT_QUOTES), 'league' => 'GU'));
 	else
 		die("Failed, unable to parse GU news system category \"".$resultArray['page']."\".\n");
 
@@ -1121,12 +1118,12 @@ $bzidsByGUPlayerID = Array();
 foreach(array_keys($playerList) as $index) {
 	if($playerList[$index]['ducatiID'] != '')
 		if(array_key_exists($playerList[$index]['ducatiID'], $bzidsByDucatiPlayerID))
-			die("Failed, duplicate ducati team IDs found.\n");
+			die("Failed, duplicate ducati player IDs found.\n");
 		else
 			$bzidsByDucatiPlayerID[$playerList[$index]['ducatiID']] = $index;
 	if($playerList[$index]['guID'] != '')
 		if(array_key_exists($playerList[$index]['guID'], $bzidsByGUPlayerID))
-			die("Failed, duplicate GU team IDs found.\n");
+			die("Failed, duplicate GU player IDs found.\n");
 		else
 			$bzidsByGUPlayerID[$playerList[$index]['guID']] = $index;
 }
@@ -1166,12 +1163,12 @@ while($resultArray != NULL) {
 
 	array_push($privateMessages, Array(
 			'author' => $bzidsByDucatiPlayerID[$resultArray['author_id']],
-			'subject' => $resultArray['subject'],
-			'message' => bbCodeToMarkDown($resultArray['message']),
+			'subject' => html_entity_decode($resultArray['subject'], ENT_QUOTES),
+			'message' => html_entity_decode(bbCodeToMarkDown($resultArray['message']), ENT_QUOTES),
 			'timestamp' => strtotime($resultArray['timestamp']),
 			'individual_recipients' => $individualRecipients,
 			'team_member_recipients' => $teamMemberRecipients,
-			'ducati_team_recipients' => $resultArray['from_team'] == 1 ? Array($resultArray['individual_recipients']) : Array(),
+			'ducati_team_recipients' => $resultArray['from_team'] == 1 && array_key_exists($resultArray['individual_recipients'], $ducatiTeamIndexesByTeamID) ? Array($resultArray['individual_recipients']) : Array(),
 			'gu_team_recipients' => Array()
 		));
 
@@ -1205,7 +1202,8 @@ while($resultArray != NULL) {
 	$teamRecipients = Array();
 	if($resultArray['team_recipients'] != '')
 		foreach(explode(" ", $resultArray['team_recipients']) as $team)
-			array_push($teamRecipients, $team);
+			if(array_key_exists($team, $guTeamIndexesByTeamID))
+				array_push($teamRecipients, $team);
 
 	$teamMemberRecipients = Array();
 	if($resultArray['team_recipients'] != '')
@@ -1215,8 +1213,8 @@ while($resultArray != NULL) {
 
 	array_push($privateMessages, Array(
 			'author' => $bzidsByGUPlayerID[$resultArray['author_id']],
-			'subject' => $resultArray['subject'],
-			'message' => bbCodeToMarkDown($resultArray['message']),
+			'subject' => html_entity_decode($resultArray['subject'], ENT_QUOTES),
+			'message' => html_entity_decode(bbCodeToMarkDown($resultArray['message']), ENT_QUOTES),
 			'timestamp' => strtotime($resultArray['timestamp']),
 			'individual_recipients' => $individualRecipients,
 			'team_member_recipients' => $teamMemberRecipients,
@@ -1246,28 +1244,68 @@ echo "Clearing BZION database... ";
 
 if(! $bzionConnection->query('DELETE FROM team_groups'))
 	die("Could not delete existing team message group data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE team_groups AUTO_INCREMENT=1'))
+	die("Could not reset index for team message group data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM player_groups'))
 	die("Could not delete existing player message group data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE player_groups AUTO_INCREMENT=1'))
+	die("Could not reset index for player message group data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM messages'))
 	die("Could not delete existing message data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE messages AUTO_INCREMENT=1'))
+	die("Could not reset index for message data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM groups'))
 	die("Could not delete existing message group data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE groups AUTO_INCREMENT=1'))
+	die("Could not reset index for message group data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM news'))
 	die("Could not delete existing news data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE news AUTO_INCREMENT=1'))
+	die("Could not reset index for news data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM bans'))
 	die("Could not delete existing ban data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE bans AUTO_INCREMENT=1'))
+	die("Could not reset index for ban data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM news_categories WHERE name <> "Uncategorized"'))
 	die("Could not delete existing news category data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE news_categories AUTO_INCREMENT=2'))
+	die("Could not reset index for news category data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM visits'))
 	die("Could not delete existing visits log data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE visits AUTO_INCREMENT=1'))
+	die("Could not reset index for visits log data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM matches'))
 	die("Could not delete existing matches data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE matches AUTO_INCREMENT=1'))
+	die("Could not reset index for matches data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM teams'))
 	die("Could not delete existing team data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE teams AUTO_INCREMENT=1'))
+	die("Could not reset index for team data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM player_roles'))
 	die("Could not delete existing player roles data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE player_roles AUTO_INCREMENT=1'))
+	die("Could not reset index for player roles data in bzion database.\n");
+
+if(! $bzionConnection->query('DELETE FROM past_callsigns'))
+	die("Could not delete existing past callsign data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE past_callsigns AUTO_INCREMENT=1'))
+	die("Could not reset index for past callsign data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM players'))
 	die("Could not delete existing player data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE players AUTO_INCREMENT=1'))
+	die("Could not reset index for player data in bzion database.\n");
 
 echo "Done.\n";
 
@@ -1368,7 +1406,6 @@ echo "Exporting visits log... ";
 foreach($visitsLog as $entry)
 	if(! $bzionConnection->query('INSERT INTO visits SET player='.$playerList[$entry['bzid']]['record']->getId().', ip="'.$entry['ip'].'", host='.($entry['host'] != '' ? '"'.$entry['host'].'"' : 'NULL').', user_agent="'.$entry['user_agent'].'", timestamp="'.$entry['timestamp'].'"'))
 		die("Failed, unable to insert log entry into BZION database.\n");
-//		die("Failed, unable to insert log entry into BZION database on query: ".'INSERT INTO visits SET player='.$playerList[$entry['bzid']]['record']->getId().', ip="'.$entry['ip'].'", host='.($entry['host'] != '' ? '"'.$entry['host'].'"' : 'NULL').', user_agent="'.$entry['user_agent'].'", timestamp="'.$entry['timestamp'].'"'."\n");
 
 echo "Done.\n";
 //*/
@@ -1380,18 +1417,21 @@ $ducatiNewsCategory = NewsCategory::addCategory("Historic Ducati News");
 $guNewsCategory = NewsCategory::addCategory("Historic GU News");
 
 foreach($newsList as $item) {
-	News::addNews($item['title'], $item['text'], $playerList[$item['author']]['record']->getId(), $item['league'] == "ducati" ? $ducatiNewsCategory->getId() : $guNewsCategory->getId());
+	$tempAdmin = FALSE;
 
-	$queryResult = $bzionConnection->query('SELECT MAX(id) AS id FROM news');
-	if(! $queryResult)
-		die("Failed, could not query for latest news entry id.\n");
-	if($queryResult->num_rows == 0)
-		die("Failed, query for latest news entry id returned no results.\n");
-	$resultArray = $queryResult->fetch_assoc();
+	if(! Player::getFromBZID($item['author'])->hasPermission(Permission::PUBLISH_NEWS)) {
+		$playerList[$item['author']]['record']->addRole(Player::ADMIN);
+		$tempAdmin = TRUE;
+	}
 
-	$queryResult = $bzionConnection->query('UPDATE news SET created="'.date("Y-m-d H:i:s", $item['timestamp']).'", updated="'.date("Y-m-d H:i:s", $item['timestamp']).'" WHERE id='.$resultArray['id']);
+	$thisNews = News::addNews($item['title'], $item['text'], $playerList[$item['author']]['record']->getId(), $item['league'] == "ducati" ? $ducatiNewsCategory->getId() : $guNewsCategory->getId());
+
+	$queryResult = $bzionConnection->query('UPDATE news SET created="'.date("Y-m-d H:i:s", $item['timestamp']).'", updated="'.date("Y-m-d H:i:s", $item['timestamp']).'" WHERE id='.$thisNews->getId());
 	if(! $queryResult)
 		die("Failed, could not set creation date for news entry.\n");
+
+	if($tempAdmin)
+		$playerList[$item['author']]['record']->removeRole(Player::ADMIN);
 }
 
 echo "Done.\n";
@@ -1400,16 +1440,9 @@ echo "Done.\n";
 echo "Exporting bans... ";
 
 foreach($bansList as $ban) {
-	Ban::addBan($ban['league'] == "ducati" ? $ducatiBanTarget->getId() : $guBanTarget->getId(), $playerList[$ban['author']]['record']->getId(), NULL, $ban['text']);
+	$thisBan = Ban::addBan($ban['league'] == "ducati" ? $ducatiBanTarget->getId() : $guBanTarget->getId(), $playerList[$ban['author']]['record']->getId(), NULL, $ban['text']);
 
-	$queryResult = $bzionConnection->query('SELECT MAX(id) AS id FROM bans');
-	if(! $queryResult)
-		die("Failed, could not query for latest ban entry id.\n");
-	if($queryResult->num_rows == 0)
-		die("Failed, query for latest ban entry id returned no results.\n");
-	$resultArray = $queryResult->fetch_assoc();
-
-	$queryResult = $bzionConnection->query('UPDATE bans SET created="'.date("Y-m-d H:i:s", $ban['timestamp']).'", updated="'.date("Y-m-d H:i:s", $ban['timestamp']).'" WHERE id='.$resultArray['id']);
+	$queryResult = $bzionConnection->query('UPDATE bans SET created="'.date("Y-m-d H:i:s", $ban['timestamp']).'", updated="'.date("Y-m-d H:i:s", $ban['timestamp']).'" WHERE id='.$thisBan->getId());
 	if(! $queryResult)
 		die("Failed, could not set creation date for ban entry.\n");
 }
@@ -1464,26 +1497,13 @@ foreach($privateMessages as $message) {
 	foreach($teamRecipientIndexes as $teamIndex)
 		$thisGroup->addMember($teamList[$teamIndex]['record']);
 
-	$queryResult = $bzionConnection->query('SELECT MAX(id) AS id FROM groups');
-	if(! $queryResult)
-		die("Failed, could not query for latest conversation entry id.\n");
-	if($queryResult->num_rows == 0)
-		die("Failed, query for latest conversation entry id returned no results.\n");
-	$resultArray = $queryResult->fetch_assoc();
-
-//	foreach($teamMemberRecipientIDs as $recipient) {
-//		$queryResult = $bzionConnection->query('INSERT INTO player_groups SET player='.$recipient.', `group`='.$resultArray['id'].', `distinct`=0');
-//		if(! $queryResult)
-//			die("Failed, could not insert record for team member message recipient.\n");
-//	}
-
 	$thisGroup->sendMessage($playerList[$message['author']]['record'], $message['message']);
 
-	$queryResult = $bzionConnection->query('UPDATE messages SET timestamp="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE group_to='.$resultArray['id']);
+	$queryResult = $bzionConnection->query('UPDATE messages SET timestamp="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE group_to='.$thisGroup->getId());
 	if(! $queryResult)
 		die("Failed, could not set date for message entry.\n");
 
-	$queryResult = $bzionConnection->query('UPDATE groups SET last_activity="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE id='.$resultArray['id']);
+	$queryResult = $bzionConnection->query('UPDATE groups SET last_activity="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE id='.$thisGroup->getId());
 	if(! $queryResult)
 		die("Failed, could not set last updated date for conversation entry.\n");
 }
@@ -1496,32 +1516,11 @@ echo "Done.\n";
 // export complete
 echo "\nExport complete.\n\n";
 
-// report team score changes
-echo "Calculating team score changes after validation... ";
-$teamScoreChanges = Array();
-$maximumDeviation = 0;
-$totalDeviations = 0;
-
-foreach($teamList as $team) {
-	$difference = abs($team['score'] - Team::getFromName($team['name'])->getElo());
-
-	array_push($teamScoreChanges, Array('team' => $team['name'], 'old' => $team['score'], 'new' => Team::getFromName($team['name'])->getElo(), 'diff' => sprintf("%+d", Team::getFromName($team['name'])->getElo() - $team['score'])));
-
-	if($difference > $maximumDeviation)
-		$maximumDeviation = $difference;
-	$totalDeviations += $difference;
-}
-
-echo "Done.\n";
-
-printData($teamScoreChanges);
-echo "Maximum change: ".$maximumDeviation."; Average change: ".intval($totalDeviations / count($teamList))."\n";
-
 // finish
 $bzionConnection->close();
 $ducatiConnection->close();
 $guConnection->close();
 
-echo "\nDone.\n";
+echo "Done.\n";
 
 ?>
