@@ -1,11 +1,44 @@
 <?php
 
 ///////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////// License ///////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
+/*
+
+Copyright (c) 2015, Joshua Bodine
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+*/
+
+///////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////// TODO /////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////
 
 /*
 
+escape characters in original messages that have special meaning to markdown? characters would be \`*_{}[]()#+-.!
 do foreach loops same way (array_keys() only if modifying elements)
 get records by name/bzid, rather than storing them
 team names and message titles have some HTML character codes in them
@@ -25,7 +58,8 @@ itself. To accomplish this, execute the following command in this directory:
 $ ln -s /path/to/bzion/directory bzion
 
 When configuring BZION, make sure you enter proper values under the
-bzion->league->duration setting.
+bzion->league->duration setting (you might need to enter the 15-minute duration
+ratio).
 
 */
 
@@ -134,8 +168,6 @@ function bbCodeToMarkDown($data) {
 	$data = preg_replace("/\[(?:style|STYLE)[^\]]*?\]\s*((?:.|\n)*?)\s*\[\/(?:style|STYLE)\]/", "*$1*", $data);
 	$data = preg_replace("/\[(?:size|SIZE)[^\]]*?\]\s*((?:.|\n)*?)\s*\[\/(?:size|SIZE)\]/", "*$1*", $data);
 
-	// escape characters that have special meaning to markdown? characters would be \`*_{}[]()#+-.!
-
 	return $data;
 }
 
@@ -196,10 +228,10 @@ $bzionTables = Array(
 		'news_categories',
 		'bans',
 		'news',
-		'groups',
+		'conversations',
 		'messages',
-		'player_groups',
-		'team_groups',
+		'player_conversations',
+		'team_conversations',
 		'countries'
 	);
 $ducatiTables = Array(
@@ -440,7 +472,7 @@ foreach($dateSortedPlayerList as $bzid => $joinedDate) {
 	$playerList[$bzid]['guID'] = $extraInfoPlayerList[$bzid]['guID'];
 }
 
-echo "Done; ".$ducatiCount." ducati, ".$guCount." GU, ".$bothCount." both.\n";
+echo "Done; ".$ducatiCount." ducati, ".$guCount." GU, ".$bothCount." both, ".($ducatiCount + $guCount + $bothCount)." total.\n";
 
 // check for duplicate player names
 echo "Checking for duplicate player names... ";
@@ -516,7 +548,7 @@ foreach($dateSortedTeamList as $index => $creationDate) {
 
 echo "Done; ".$ducatiCount." ducati, ".$guCount." GU, ".($ducatiCount + $guCount)." total.\n";
 
-///*
+/*
 // check for non-ASCII team names
 echo "Checking for non-ASCII characters in team names... ";
 
@@ -530,7 +562,7 @@ foreach(array_keys($teamList) as $index) {
 }
 
 echo "Done.\n";
-//*/
+*/
 
 // check for duplicate team names
 echo "Checking for duplicate team names... ";
@@ -873,7 +905,6 @@ echo "Importing matches... ";
 $matchesList = Array();
 
 $queryResult = $ducatiConnection->query('SELECT players.external_playerid AS author, matches.timestamp, matches.team1_teamid, matches.team2_teamid, matches.team1_points, matches.team2_points, matches.duration FROM players, matches WHERE players.id = matches.playerid');
-//$queryResult = $ducatiConnection->query('SELECT players.external_playerid AS author, matches.timestamp, matches.team1_teamid, matches.team2_teamid, matches.team1_points, matches.team2_points, matches.duration FROM players, matches WHERE players.id = matches.playerid ORDER BY timestamp DESC LIMIT 100');
 if(! $queryResult)
 	die("Failed, could not query ducati matches list.\n");
 if($queryResult->num_rows == 0)
@@ -921,7 +952,6 @@ while($resultArray != NULL) {
 }
 
 $queryResult = $guConnection->query('SELECT players.external_id AS author, matches.timestamp, matches.team1ID, matches.team2ID, matches.team1_points, matches.team2_points, matches.duration FROM players, matches WHERE players.id = matches.userid');
-//$queryResult = $guConnection->query('SELECT players.external_id AS author, matches.timestamp, matches.team1ID, matches.team2ID, matches.team1_points, matches.team2_points, matches.duration FROM players, matches WHERE players.id = matches.userid ORDER BY timestamp DESC LIMIT 100');
 if(! $queryResult)
 	die("Failed, could not query GU matches list.\n");
 if($queryResult->num_rows == 0)
@@ -1242,25 +1272,25 @@ echo "Done; ".$ducatiCount." ducati, ".$guCount." GU, ".($ducatiCount + $guCount
 // clear bzion database
 echo "Clearing BZION database... ";
 
-if(! $bzionConnection->query('DELETE FROM team_groups'))
-	die("Could not delete existing team message group data in bzion database.\n");
-if(! $bzionConnection->query('ALTER TABLE team_groups AUTO_INCREMENT=1'))
-	die("Could not reset index for team message group data in bzion database.\n");
+if(! $bzionConnection->query('DELETE FROM team_conversations'))
+	die("Could not delete existing team message conversation data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE team_conversations AUTO_INCREMENT=1'))
+	die("Could not reset index for team message conversation data in bzion database.\n");
 
-if(! $bzionConnection->query('DELETE FROM player_groups'))
-	die("Could not delete existing player message group data in bzion database.\n");
-if(! $bzionConnection->query('ALTER TABLE player_groups AUTO_INCREMENT=1'))
-	die("Could not reset index for player message group data in bzion database.\n");
+if(! $bzionConnection->query('DELETE FROM player_conversations'))
+	die("Could not delete existing player message conversation data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE player_conversations AUTO_INCREMENT=1'))
+	die("Could not reset index for player message conversation data in bzion database.\n");
 
 if(! $bzionConnection->query('DELETE FROM messages'))
 	die("Could not delete existing message data in bzion database.\n");
 if(! $bzionConnection->query('ALTER TABLE messages AUTO_INCREMENT=1'))
 	die("Could not reset index for message data in bzion database.\n");
 
-if(! $bzionConnection->query('DELETE FROM groups'))
-	die("Could not delete existing message group data in bzion database.\n");
-if(! $bzionConnection->query('ALTER TABLE groups AUTO_INCREMENT=1'))
-	die("Could not reset index for message group data in bzion database.\n");
+if(! $bzionConnection->query('DELETE FROM conversations'))
+	die("Could not delete existing message conversation data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE conversations AUTO_INCREMENT=1'))
+	die("Could not reset index for message conversation data in bzion database.\n");
 
 if(! $bzionConnection->query('DELETE FROM news'))
 	die("Could not delete existing news data in bzion database.\n");
@@ -1315,6 +1345,7 @@ echo "Exporting players... ";
 $deletedTeamLeader = Player::newPlayer(-1, "Deleted Team Leader");
 $ducatiBanTarget = Player::newPlayer(-2, "Historic Ducati Ban");
 $guBanTarget = Player::newPlayer(-3, "Historic GU Ban");
+$dummyMessageTarget = Player::newPlayer(-4, "Historic Message");
 
 foreach(array_keys($playerList) as $bzid) {
 	if($playerList[$bzid]['location'] == "here be dragons")
@@ -1349,7 +1380,6 @@ echo "Exporting teams... ";
 
 foreach(array_keys($teamList) as $index) {
 	$teamList[$index]['record'] = Team::createTeam($teamList[$index]['name'], $teamList[$index]['status'] == "deleted" ? $deletedTeamLeader->getId() : $playerList[$teamList[$index]['leader']]['record']->getId(), "", $teamList[$index]['description'], $teamList[$index]['status'], $teamList[$index]['created']." 00:00:00");
-//	$teamList[$index]['record']->changeElo($teamList[$index]['score'] - 1200);
 
 	if($teamList[$index]['status'] == "deleted") {
 		$teamList[$index]['record']->delete();
@@ -1371,7 +1401,6 @@ foreach($teamList as $team)
 
 echo "Done.\n";
 
-///*
 // export matches
 echo "Exporting matches... ";
 
@@ -1393,13 +1422,11 @@ foreach($matchesList as $match)
 		);
 
 echo "Done.\n";
-//*/
 
 // that probably took a while, so let's verify our database connections
 if(! $bzionConnection->ping() || ! $ducatiConnection->ping() || ! $guConnection->ping())
 	connectToSQL();
 
-///*
 // export visits log
 echo "Exporting visits log... ";
 
@@ -1408,7 +1435,6 @@ foreach($visitsLog as $entry)
 		die("Failed, unable to insert log entry into BZION database.\n");
 
 echo "Done.\n";
-//*/
 
 // export news
 echo "Exporting news... ";
@@ -1457,15 +1483,16 @@ echo "Done.\n";
 // export private messages
 echo "Exporting private messages... ";
 
+$conversationsByHash = Array();
 foreach($privateMessages as $message) {
 //if(! in_array(9972, $message['individual_recipients']) && $message['author'] != 9972 && ! in_array(1167, $message['gu_team_recipients']))
 //	continue;
 
-	$individualRecipientIDs = Array();
+	$individualRecipients = Array();
 	foreach($message['individual_recipients'] as $recipientBZID)
 		if($recipientBZID != $message['author']) // only add the author once at the end
-			array_push($individualRecipientIDs, $playerList[$recipientBZID]['record']->getId());
-	array_push($individualRecipientIDs, $playerList[$message['author']]['record']->getId());
+			array_push($individualRecipients, $playerList[$recipientBZID]['record']);
+	array_push($individualRecipients, $playerList[$message['author']]['record']);
 
 	$teamRecipientIndexes = Array();
 	foreach($message['ducati_team_recipients'] as $teamID)
@@ -1473,7 +1500,6 @@ foreach($privateMessages as $message) {
 	foreach($message['gu_team_recipients'] as $teamID)
 		array_push($teamRecipientIndexes, $guTeamIndexesByTeamID[$teamID]);
 
-	$teamMemberRecipientIDs = Array();
 	foreach($message['team_member_recipients'] as $recipientBZID) {
 		if(in_array($recipientBZID, $message['individual_recipients'])) // don't duplicate individual/team recipients
 			continue;
@@ -1487,26 +1513,69 @@ foreach($privateMessages as $message) {
 				break;
 			}
 		}
-		if($inATeam)
-			array_push($teamMemberRecipientIDs, $playerList[$recipientBZID]['record']->getId());
-		else
-			array_push($individualRecipientIDs, $playerList[$recipientBZID]['record']->getId());
+
+		if(! $inATeam)
+			array_push($individualRecipients, $playerList[$recipientBZID]['record']);
 	}
 
-	$thisGroup = Group::createGroup($message['subject'], $playerList[$message['author']]['record']->getId(), $individualRecipientIDs);
-	foreach($teamRecipientIndexes as $teamIndex)
-		$thisGroup->addMember($teamList[$teamIndex]['record']);
+	// messages to only ourselves aren't supported in BZION, so add a dummy recipient if applicable
+	if(count($individualRecipients) == 1 && count($teamRecipientIndexes) == 0)
+		array_push($individualRecipients, $dummyMessageTarget);
 
-	$thisGroup->sendMessage($playerList[$message['author']]['record'], $message['message']);
+	// create a hash of the topic/recipients so we can join associated messages
+	$thisHash = "TOPIC/".
+		preg_replace("/(Re:\s?)*/", "", $message['subject']).
+		"/TEAMS/";
+	if(count($teamRecipientIndexes) > 0) {
+		sort($teamRecipientIndexes);
+		$thisHash .= implode("/", $teamRecipientIndexes);
+	}
+	$thisHash .= "/PLAYERS/";
+	if(count($individualRecipients) > 0) {
+		$individualRecipientBZIDs = Array();
+		foreach($individualRecipients as $recipient)
+			array_push($individualRecipientBZIDs, $recipient->getBZID());
+		sort($individualRecipientBZIDs);
+		$thisHash .= implode("/", $individualRecipientBZIDs);
+	}
+	if(array_key_exists($thisHash, $conversationsByHash)) {
+		$thisConversation = $conversationsByHash[$thisHash];
 
-	$queryResult = $bzionConnection->query('UPDATE messages SET timestamp="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE group_to='.$thisGroup->getId());
+		$teamNames = Array();
+		foreach($teamRecipientIndexes as $index)
+			array_push($teamNames, $teamList[$index]['name']);
+		$playerNames = Array();
+		foreach($individualRecipientBZIDs as $bzid)
+			if($bzid == -4)
+				array_push($playerNames, $dummyMessageTarget->getUsername());
+			else
+				array_push($playerNames, $playerList[$bzid]['name']);
+		echo "NOTICE: re-used a conversation for message on ".
+			date("Y-m-d H:i:s", $message['timestamp'])." to team(s) ".
+			(count($teamNames) == 0 ? "(none)" : implode(", ", $teamNames))." and players ".
+			(count($playerNames) == 0 ? "(none)": implode(", ", $playerNames))."... ";
+	} else {
+		$thisConversation = Conversation::createConversation($message['subject'], $playerList[$message['author']]['record']->getId(), $individualRecipients);
+
+		foreach($teamRecipientIndexes as $teamIndex)
+			$thisConversation->addMember($teamList[$teamIndex]['record']);
+
+		$conversationsByHash[$thisHash] = $thisConversation;
+	}
+
+	$thisConversation->sendMessage($playerList[$message['author']]['record'], $message['message']);
+
+	$queryResult = $bzionConnection->query('UPDATE messages SET timestamp="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE conversation_to='.$thisConversation->getId());
 	if(! $queryResult)
 		die("Failed, could not set date for message entry.\n");
 
-	$queryResult = $bzionConnection->query('UPDATE groups SET last_activity="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE id='.$thisGroup->getId());
+	$queryResult = $bzionConnection->query('UPDATE conversations SET last_activity="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE id='.$thisConversation->getId());
 	if(! $queryResult)
 		die("Failed, could not set last updated date for conversation entry.\n");
 }
+
+if(! $bzionConnection->query('UPDATE players SET status="deleted" WHERE id = '.$dummyMessageTarget->getId()))
+	die("Failed, unable to delete dummy player record for messages to self.\n");
 
 foreach($playerList as $player)
 	$player['record']->markMessagesAsRead();
