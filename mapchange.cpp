@@ -2,6 +2,7 @@
 //
 
 #include "bzfsAPI.h"
+#include "plugin_utils.h"
 #include <math.h>
 #include <time.h>
 #include <fstream>
@@ -43,7 +44,7 @@ public:
     if (!player)
       return true;
 
-    if (player->hasPerm("confChange")) {
+    if (player->hasPerm("mapchange")) {
       if (!matchInProgress || player->hasPerm(bz_perm_shutdownServer)) {
         if (command == "maprandom") {
           std::ifstream confStream(confFile.c_str());
@@ -92,12 +93,13 @@ public:
           {
             lineList->clear();
             lineList->tokenize(line.c_str(), " \t", 2, true);
-
-            if (lineList->size() == 2 && lineList->get(0) == params->get(0)) {
+	    bz_ApiString thisConfName = lineList->get(0); thisConfName.tolower();
+	    bz_ApiString requestedConfName = params->get(0); requestedConfName.tolower();
+	    if (lineList->size() == 2 && thisConfName == requestedConfName) {
               std::ofstream oputfStream(outputFile.c_str());
               oputfStream << lineList->get(1).c_str() << std::endl;
               oputfStream.close();
-              bz_sendTextMessage(BZ_SERVER,BZ_ALLUSERS,(std::string("Server restarting with configuration ") + params->get(0).c_str() + ": Requested by " + player->callsign.c_str()).c_str());
+              bz_sendTextMessage(BZ_SERVER,BZ_ALLUSERS,(std::string("Server restarting with configuration ") + lineList->get(0).c_str() + ": Requested by " + player->callsign.c_str()).c_str());
               bz_shutdown();
               done = true;
             }
@@ -132,7 +134,7 @@ public:
     else if (eventData->eventType == bz_eGameStartEvent) matchInProgress = true;
   }
   
-  virtual const char* Name (){return "Mapchange";}
+  virtual const char* Name (){return "Map Change";}
   virtual void Init ( const char* config);
   virtual void Cleanup();
 };
@@ -142,14 +144,11 @@ BZ_PLUGIN(MapChanger);
 void MapChanger::Init ( const char* commandLine )
 {
   bz_debugMessage(4,"mapchange plugin loaded");
-  bz_APIStringList* cmd = bz_newStringList();
-  cmd->tokenize(commandLine, ",", 2, true);
-  if (cmd->size() != 2) {
-    bz_deleteStringList(cmd);
+  PluginConfig config(commandLine);
+  if(! config.errors) {
+    confFile = config.item("mapchange", "ConfigurationFile");
+    outputFile = config.item("mapchange", "OutputFile");
   }
-  confFile = cmd->get(1).c_str();
-  outputFile = cmd->get(0).c_str();
-  bz_deleteStringList(cmd);
   Register(bz_eGameEndEvent);
   Register(bz_eGameStartEvent);
   bz_registerCustomSlashCommand ( "mapchange", &mapChanger );
