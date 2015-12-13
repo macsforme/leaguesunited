@@ -1541,6 +1541,7 @@ foreach($privateMessages as $message) {
 	if(array_key_exists($thisHash, $conversationsByHash)) {
 		$thisConversation = $conversationsByHash[$thisHash];
 
+/*
 		$teamNames = Array();
 		foreach($teamRecipientIndexes as $index)
 			array_push($teamNames, $teamList[$index]['name']);
@@ -1554,6 +1555,7 @@ foreach($privateMessages as $message) {
 			date("Y-m-d H:i:s", $message['timestamp'])." to team(s) ".
 			(count($teamNames) == 0 ? "(none)" : implode(", ", $teamNames))." and players ".
 			(count($playerNames) == 0 ? "(none)": implode(", ", $playerNames))."... ";
+*/
 	} else {
 		$thisConversation = Conversation::createConversation($message['subject'], $playerList[$message['author']]['record']->getId(), $individualRecipients);
 
