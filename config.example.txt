@@ -21,5 +21,5 @@ BZLUSRVKEY=279519107347991915
 
 # Concisely specify the geographical location of the server using one
 # piece of information (usually city, state or country; for example,
-# "California," "New Jersy," "London," "Berlin," "Sydney," etc.
+# "California," "New Jersey," "London," "Berlin," "Sydney," etc.
 BZLUSRVLOC="Arizona"
