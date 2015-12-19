@@ -945,7 +945,7 @@ while($resultArray != NULL) {
 			'team2Points' => $resultArray['team2_points'],
 			'duration' => $resultArray['duration'],
 			'author' => $author,
-			'map' => 'ducati'
+			'map' => 'Ducati'
 		));
 
 	$resultArray = $queryResult->fetch_assoc();
@@ -992,7 +992,7 @@ while($resultArray != NULL) {
 			'team2Points' => $resultArray['team2_points'],
 			'duration' => $resultArray['duration'],
 			'author' => $author,
-			'map' => 'hix'
+			'map' => 'HiX'
 		));
 
 	$resultArray = $queryResult->fetch_assoc();
@@ -1337,6 +1337,11 @@ if(! $bzionConnection->query('DELETE FROM players'))
 if(! $bzionConnection->query('ALTER TABLE players AUTO_INCREMENT=1'))
 	die("Could not reset index for player data in bzion database.\n");
 
+if(! $bzionConnection->query('DELETE FROM maps'))
+	die("Could not delete existing map data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE maps AUTO_INCREMENT=1'))
+	die("Could not reset index for map data in bzion database.\n");
+
 echo "Done.\n";
 
 // export players
@@ -1404,6 +1409,9 @@ echo "Done.\n";
 // export matches
 echo "Exporting matches... ";
 
+$ducatiMap = Map::addMap("Ducati");
+$hixMap = Map::addMap("HiX");
+
 foreach($matchesList as $match)
 	Match::enterMatch(
 			$teamList[$match['team1ID']]['record']->getId(),
@@ -1418,7 +1426,7 @@ foreach($matchesList as $match)
 			NULL,
 			NULL,
 			NULL,
-			$match['map']
+			$match['map'] == "Ducati" ? $ducatiMap->getId() : $hixMap->getId()
 		);
 
 echo "Done.\n";
