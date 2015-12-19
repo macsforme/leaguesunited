@@ -9,9 +9,10 @@ git repository in the following way:
 
 git clone -b serverconfig  https://github.com/macsforme/leaguesunited
 
-Once you have obtained this directory, please edit the config.txt file with
-your bzfs list server key, your server location and any other settings
-specific to your system (see the file for all possible settings).
+Once you have obtained this directory, please copy the config.example.txt file
+to "config.txt," and edit it with your bzfs list server key, your server
+location and any other settings specific to your system (see the file for all
+possible settings).
 
 To start the server, execute the start.sh script. You may execute this script
 from any directory (you need not have your working directory be this one). The
