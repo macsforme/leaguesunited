@@ -43,8 +43,8 @@ fi
 touch run/main.keepalive
 
 # Set default configuration values, then load configuration to override them as appropriate
-BZBINDIR=/usr/bin/bzfs
-BZLIBDIR=/usr/lib/bzflag
+BZBINDIR=/usr/local/bin
+BZLIBDIR=/usr/local/lib/bzflag
 BZLUSRVKEY=""
 BZLUSRVADDR=""
 BZLURPLYSRVPORT=5195
