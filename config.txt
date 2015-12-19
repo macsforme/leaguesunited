@@ -1,0 +1,25 @@
+# In this configuration file you may specify information specific to your
+# server provided for BZFlag Leagues United. The commented-out values show the
+# default settings. Only specify the configuration values you need to change.
+# You must at least specify your list server key.
+
+# Specify the path to the directory containing bzfs
+#BZBINDIR=/usr/local/bin
+
+# Specify the path to the directory containing plugins (leagueOverSeer,
+# mapchange, TimeLimit and logDetail are required)
+#BZLIBDIR=/usr/local/lib/bzflag
+
+# Specify your BZFlag list server key (REQUIRED)
+#BZLUSRVKEY=
+
+# Specify a port to run the replay server on
+#BZLURPLYSRVPORT=5195
+
+# Specify a space-separated list of ports to run league servers on
+#BZLUSRVPORT="5196 5197 5198"
+
+# Concisely specify the geographical location of the server using one
+# piece of information (usually city, state or country; for example,
+# "California," "New Jersy," "London," "Berlin," "Sydney," etc.
+#BZLUSRVLOC=""

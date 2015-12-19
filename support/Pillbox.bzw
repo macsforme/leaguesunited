@@ -1,0 +1,392 @@
+# BZFlag client: saved world on Wed Dec  9 23:05:10 2015
+
+options
+  -mp 0,20,20,0,0,100
+  -c
+  -ms 3
+end
+
+dynamicColor
+  name LinkMaterial
+  red limits 0 0.25
+  red sinusoid 2 0 1
+  green limits 0 0.25
+  green sinusoid 2 0.666667 1
+  blue limits 0 0.25
+  blue sinusoid 2 1.33333 1
+  alpha limits 0.75 0.75
+end
+
+textureMatrix
+  name LinkMaterial
+  shift 0 -0.05
+end
+
+material
+  addtexture mesh
+end
+
+material
+  name LinkMaterial
+  dyncol LinkMaterial
+  diffuse 0 0 0 0.5
+  nolighting
+  addtexture telelink
+    texmat LinkMaterial
+end
+
+define stockade_box
+  box
+    position 0 0 0
+    size 5 5 10
+    rotation 0
+  end
+  pyramid
+    position 0 0 10
+    size 5 5 0.125
+    rotation 0
+  end
+enddef
+
+define stockade_pair
+  group stockade_box
+    shift -12.5 0 0
+  end
+  group stockade_box
+    shift 12.5 0 0
+  end
+enddef
+
+define stockade_quad
+  group stockade_pair
+    shift -25 0 0
+  end
+  group stockade_pair
+    shift 25 0 0
+  end
+enddef
+
+define stockade
+  group stockade_box
+    shift 0 0 0
+  end
+  group stockade_pair
+    shift 37.5 0 0
+  end
+  group stockade_pair
+    spin 90 0 0 1
+    shift 0 37.5 0
+  end
+  group stockade_quad
+    shift 25 -23.75 0
+  end
+  group stockade_quad
+    spin 90 0 0 1
+    shift -23.75 25 0
+  end
+enddef
+
+define hedgerow_box
+  box
+    position 0 0 0
+    size 10 10 10
+    rotation 45
+  end
+  pyramid
+    position 0 0 10
+    size 10 10 0.125
+    rotation 45
+  end
+enddef
+
+define hedgerow_triple
+  group hedgerow_box
+    shift -100 0 0
+  end
+  group hedgerow_box
+    shift 0 0 0
+  end
+  group hedgerow_box
+    shift 100 0 0
+  end
+enddef
+
+define hedgerow
+  group hedgerow_triple
+    shift 0 12.5 0
+  end
+  group hedgerow_box
+    shift -150 -12.5 0
+  end
+  group hedgerow_triple
+    shift 50 -12.5 0
+  end
+enddef
+
+define pillbox
+  box
+    position -8 -26 0
+    size 20 3 15
+    rotation 0
+  end
+  box
+    position -25 0 0
+    size 3 23 15
+    rotation 0
+  end
+  box
+    position 0 26 0
+    size 28 3 15
+    rotation 0
+  end
+  box
+    position 25 5.5 0
+    size 3 17.5 15
+    rotation 0
+  end
+  pyramid
+    position -8 -26 15
+    size 20 3 0.125
+    rotation 0
+  end
+  pyramid
+    position -25 0 15
+    size 3 23 0.125
+    rotation 0
+  end
+  pyramid
+    position 0 26 15
+    size 28 3 0.125
+    rotation 0
+  end
+  pyramid
+    position 25 5.5 15
+    size 3 17.5 0.125
+    rotation 0
+  end
+enddef
+
+define one_side
+  box
+    position 0 25.5 0
+    size 1 24.5 10
+    rotation 0
+  end
+  pyramid
+    position 0 25.5 10
+    size 1 24.5 0.125
+    rotation 0
+  end
+  pyramid
+    position 25.5 0 10
+    size 25.5 1 0.125
+    rotation 0
+  end
+  base
+    position 375 375 0
+    size 25 25 0
+    rotation 0
+    color 0
+  end
+  group stockade
+    shift 320 320 0
+  end
+  group hedgerow
+    shift 214 0 0
+  end
+  group hedgerow
+    spin 90 0 0 1
+    shift 0 235.75 0
+  end
+  group pillbox
+    shift -225 270 0
+  end
+enddef
+
+define pixel
+  mesh
+  # faces = 1
+  # checks = 0
+  # vertices = 4
+  # normals = 0
+  # texcoords = 0
+  # mins = 0 -0.5 -0.5
+  # maxs = 0 0.5 0.5
+    passable
+    vertex 0.00000000 -0.50000000 -0.50000000
+    vertex 0.00000000 -0.50000000 0.50000000
+    vertex 0.00000000 0.50000000 0.50000000
+    vertex 0.00000000 0.50000000 -0.50000000
+    face
+      vertices 0 1 2 3
+      matref 0
+    endface
+  end
+enddef
+
+define x_arm
+  mesh
+  # faces = 1
+  # checks = 0
+  # vertices = 6
+  # normals = 0
+  # texcoords = 0
+  # mins = 0 -1 -1
+  # maxs = 0 1 1
+    passable
+    vertex 0.00000000 -1.00000000 0.28125000
+    vertex 0.00000000 -1.00000000 1.00000000
+    vertex 0.00000000 -0.28125000 1.00000000
+    vertex 0.00000000 1.00000000 -0.28125000
+    vertex 0.00000000 1.00000000 -1.00000000
+    vertex 0.00000000 0.28125000 -1.00000000
+    face
+      vertices 0 1 2 3 4 5
+      matref 0
+    endface
+  end
+enddef
+
+define letter_P
+  group pixel
+    scale 1 1 7
+    shift 0 2 0
+  end
+  group pixel
+    scale 1 4 1
+    shift 0 -0.5 3
+  end
+  group pixel
+    scale 1 4 1
+    shift 0 -0.5 0
+  end
+  group pixel
+    scale 1 1 2
+    shift 0 -2 1.5
+  end
+enddef
+
+define letter_b
+  group pixel
+    scale 1 1 7
+    shift 0 1.5 0
+  end
+  group pixel
+    scale 1 2 1
+  end
+  group pixel
+    scale 1 2 1
+    shift 0 0 -3
+  end
+  group pixel
+    scale 1 1 4
+    shift 0 -1.5 -1.5
+  end
+enddef
+
+define letter_i
+  group pixel
+    scale 1 1 4
+    shift 0 0 -1.5
+  end
+  group pixel
+    shift 0 0 2
+  end
+enddef
+
+define letter_l
+  group pixel
+    scale 1 1 7
+  end
+enddef
+
+define letter_o
+  group pixel
+    scale 1 1 4
+    shift 0 1.5 -1.5
+  end
+  group pixel
+    scale 1 2 1
+  end
+  group pixel
+    scale 1 2 1
+    shift 0 0 -3
+  end
+  group pixel
+    scale 1 1 4
+    shift 0 -1.5 -1.5
+  end
+enddef
+
+define letter_x
+  group x_arm
+    shift 0 -1 -0.5
+  end
+  group x_arm
+    spin 90 1 0 0
+    shift 0 1 -0.5
+  end
+  group x_arm
+    shift 0 1 -2.5
+  end
+  group x_arm
+    spin 90 1 0 0
+    shift 0 -1 -2.5
+  end
+enddef
+
+define word_Pillbox
+  group letter_P
+    shift 0 10.5 0
+  end
+  group letter_i
+    shift 0 6.5 0
+  end
+  group letter_l
+    shift 0 4.5 0
+  end
+  group letter_l
+    shift 0 2.5 0
+  end
+  group letter_b
+    shift 0 -1 0
+  end
+  group letter_o
+    shift 0 -6 0
+  end
+  group letter_x
+    shift 0 -11 0
+  end
+enddef
+
+box
+  position 0 0 0
+  size 51 1 10
+  rotation 0
+end
+#group word_Pillbox
+#  scale 1 0.015625 0.015625
+#  shift 1 0 1.57
+#end
+group one_side
+  spin 0 0 0 1
+  team 1
+end
+group one_side
+  spin 180 0 0 1
+  team 2
+end
+zone
+  position 375 375 0
+  size 1 1 0
+  rotation 0
+  safety 1
+end
+
+zone
+  position -375 -375 0
+  size 1 1 0
+  rotation 0
+  safety 2
+end
+

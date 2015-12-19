@@ -1,0 +1,16 @@
+-advertise GU-LEAGUE.ADMINS,DUCATI.ADMIN,GU.LEAGUE,DUC.LEAGUE
+-a 0 0
+-groupdb support/groupdb.txt
+-set _rejoinTime 0
+-time 1800
+-timemanual
+-recdir recordings
+
+-srvmsg "Welcome to this test server for BZFlag Leagues United. To play here, you must"
+-srvmsg "be in either the GU League or Ducati League spawn group. Please feel free to"
+-srvmsg "test features (including 'official' test matches) and report any issues."
+-srvmsg ""
+-srvmsg "/maplist          - show a list of available maps"
+-srvmsg "/mapchange <map>  - change the map"
+-srvmsg ""
+-srvmsg "Please visit the league test site at http://leaguetest.fairserve.net"
