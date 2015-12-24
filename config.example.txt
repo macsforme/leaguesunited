@@ -4,14 +4,14 @@
 # You must at least specify your list server key.
 
 # Specify the path to the directory containing bzfs
-BZBINDIR=/home/josh/bzflag/bin
+#BZBINDIR=/usr/local/bin
 
 # Specify the path to the directory containing plugins (leagueOverSeer,
 # mapchange, TimeLimit and logDetail are required)
-BZLIBDIR=/home/josh/bzflag/lib/bzflag
+#BZLIBDIR=/usr/local/lib/bzflag
 
 # Specify your BZFlag list server key (REQUIRED)
-BZLUSRVKEY=279519107347991915
+#BZLUSRVKEY=
 
 # Specify a port to run the replay server on
 #BZLURPLYSRVPORT=5195
@@ -22,4 +22,4 @@ BZLUSRVKEY=279519107347991915
 # Concisely specify the geographical location of the server using one
 # piece of information (usually city, state or country; for example,
 # "California," "New Jersey," "London," "Berlin," "Sydney," etc.
-BZLUSRVLOC="Arizona"
+#BZLUSRVLOC=""
