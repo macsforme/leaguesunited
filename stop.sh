@@ -22,7 +22,7 @@ fi
 # Remove keepalive file so main script doesn't try to respawn the servers
 rm run/main.keepalive 2>/dev/null
 
-# Kill the servers (is it safe to cat the pidfiles into a command?)
+# Kill the servers
 for PORT in $BZLUSRVPORT
 do
 	kill `cat run/$PORT-pid.txt` 2>/dev/null

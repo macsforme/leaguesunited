@@ -2,7 +2,7 @@
 
 # Termination function
 function cleanupAndUnlock {
-	# Clean up generated files (is it safe to cat the pidfiles into a command?)
+	# Clean up generated files
 	for PORT in $BZLUSRVPORT
 	do
 		rm run/$PORT-pid.txt
