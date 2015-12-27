@@ -85,6 +85,13 @@ fi
 				BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
 			fi
 
+			if [[ $BZLUSRVADDR ]]
+			then
+				BZLUSRVADDRARG="-publicaddr $BZLUSRVADDR:$PORT"
+			else
+				BZLUSRVADDRARG=
+			fi
+
 			echo -e "[leagueOverSeer]" > run/$PORT-plugins.txt
 			echo -e "\tROTATIONAL_LEAGUE=true" >> run/$PORT-plugins.txt
 			echo -e "\tMAPCHANGE_PATH=run/$PORT-map.txt" >> run/$PORT-plugins.txt
@@ -107,6 +114,7 @@ fi
 				-p $PORT \
 				-publickey $BZLUSRVKEY \
 				-publictitle "$BZLUSRVTITLE" \
+				$BZLUSRVADDRARG \
 				-pidfile run/$PORT-pid.txt \
 				-conf support/bzfs.txt \
 				$BZLUMAPARG \
@@ -131,11 +139,19 @@ fi
 			BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
 		fi
 
+		if [[ $BZLUSRVADDR ]]
+		then
+			BZLUSRVADDRARG="-publicaddr $BZLUSRVADDR:$BZLURPLYSRVPORT"
+		else
+			BZLUSRVADDRARG=
+		fi
+
 		# Start the server
 		$BZBINDIR/bzfs \
 			-p $BZLURPLYSRVPORT \
 			-publickey $BZLUSRVKEY \
 			-publictitle "$BZLUSRVTITLE" \
+			$BZLUSRVADDRARG \
 			-pidfile run/$BZLURPLYSRVPORT-pid.txt \
 			-conf support/bzfs.txt \
 			-replay \

@@ -1,7 +1,7 @@
 # In this configuration file you may specify information specific to your
 # server provided for BZFlag Leagues United. The commented-out values show the
 # default settings. Only specify the configuration values you need to change.
-# You must at least specify your list server key.
+# You must at least specify your list server key and server address.
 
 # Specify the path to the directory containing bzfs
 #BZBINDIR=/usr/local/bin
@@ -12,6 +12,10 @@
 
 # Specify your BZFlag list server key (REQUIRED)
 #BZLUSRVKEY=
+
+# Specify the domain name or IP address of your server (to be used in the
+# public address)
+#BZLUSRVADDR=
 
 # Specify a port to run the replay server on
 #BZLURPLYSRVPORT=5195
