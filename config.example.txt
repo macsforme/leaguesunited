@@ -13,8 +13,8 @@
 # Specify your BZFlag list server key (REQUIRED)
 #BZLUSRVKEY=
 
-# Specify the domain name or IP address of your server (to be used in the
-# public address)
+# Specify the domain name or IP address of your server to be used in the
+# public address (REQUIRED)
 #BZLUSRVADDR=
 
 # Specify a port to run the replay server on
