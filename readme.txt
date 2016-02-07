@@ -7,7 +7,7 @@ from the "release" branch of https://github.com/allejo/LeagueOverseer. Once
 you have built and installed those two plugins, obtain this directory from the
 git repository in the following way:
 
-git clone -b serverconfig  https://github.com/macsforme/leaguesunited
+git clone -b serverconfig https://github.com/macsforme/leaguesunited
 
 Once you have obtained this directory, please copy the config.example.txt file
 to "config.txt," and edit it with your bzfs list server key, your server
