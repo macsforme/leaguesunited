@@ -11,7 +11,10 @@ function cleanupAndUnlock {
 		rm run/$PORT-maplist.txt
 	done
 
-	rm run/$BZLURPLYSRVPORT-pid.txt
+	if [[ $BZLURPLYSRVPORT ]]
+	then
+		rm run/$BZLURPLYSRVPORT-pid.txt
+	fi
 
 	# Release lock file
 	rmdir run/main.lock 2>/dev/null
@@ -130,37 +133,40 @@ fi
 	done
 
 	# Start loop for replay port
-	while [[ -e run/main.keepalive ]]
-	do
-		# Prepare configuration
-		BZLUSRVTITLE="Testing Leagues United Replay Server"
-		if [[ $BZLUSRVLOC ]]
-		then
-			BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
-		fi
+	if [[ $BZLURPLYSRVPORT ]]
+	then
+		while [[ -e run/main.keepalive ]]
+		do
+			# Prepare configuration
+			BZLUSRVTITLE="Testing Leagues United Replay Server"
+			if [[ $BZLUSRVLOC ]]
+			then
+				BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
+			fi
 
-		if [[ $BZLUSRVADDR ]]
-		then
-			BZLUSRVADDRARG="-publicaddr $BZLUSRVADDR:$BZLURPLYSRVPORT"
-		else
-			BZLUSRVADDRARG=
-		fi
+			if [[ $BZLUSRVADDR ]]
+			then
+				BZLUSRVADDRARG="-publicaddr $BZLUSRVADDR:$BZLURPLYSRVPORT"
+			else
+				BZLUSRVADDRARG=
+			fi
 
-		# Start the server
-		$BZBINDIR/bzfs \
-			-p $BZLURPLYSRVPORT \
-			-publickey $BZLUSRVKEY \
-			-publictitle "$BZLUSRVTITLE" \
-			$BZLUSRVADDRARG \
-			-pidfile run/$BZLURPLYSRVPORT-pid.txt \
-			-conf support/bzfs.txt \
-			-replay \
-			-loadplugin $BZLIBDIR/logDetail.so \
-			>> logs/$BZLURPLYSRVPORT.txt \
-			2> logs/errors/$BZLURPLYSRVPORT.txt
+			# Start the server
+			$BZBINDIR/bzfs \
+				-p $BZLURPLYSRVPORT \
+				-publickey $BZLUSRVKEY \
+				-publictitle "$BZLUSRVTITLE" \
+				$BZLUSRVADDRARG \
+				-pidfile run/$BZLURPLYSRVPORT-pid.txt \
+				-conf support/bzfs.txt \
+				-replay \
+				-loadplugin $BZLIBDIR/logDetail.so \
+				>> logs/$BZLURPLYSRVPORT.txt \
+				2> logs/errors/$BZLURPLYSRVPORT.txt
 
-		sleep 1
-	done &
+			sleep 1
+		done &
+	fi
 
 	# Wait for all of those to be terminated and finish
 	wait

@@ -27,7 +27,10 @@ for PORT in $BZLUSRVPORT
 do
 	kill `cat run/$PORT-pid.txt` 2>/dev/null
 done
-kill `cat run/$BZLURPLYSRVPORT-pid.txt` 2>/dev/null
+if [[ $BZLURPLYSRVPORT ]]
+then
+	kill `cat run/$BZLURPLYSRVPORT-pid.txt` 2>/dev/null
+fi
 
 # Give the start script a few seconds to remove the lock file, then go ahead and do it
 COUNTDOWN=5
