@@ -866,6 +866,7 @@ foreach(array_keys($teamList) as $index)
 
 foreach(array_keys($playerList) as $index) {
 	$playerList[$index]['team'] = '';
+	$playerList[$index]['inviteToTeam'] = '';
 
 	if($playerList[$index]['ducatiTeam'] != '' && $playerList[$index]['guTeam'] != '') {
 		if(strtotime($teamList[$ducatiTeamIndexesByTeamID[$playerList[$index]['ducatiTeam']]]['created']) <= strtotime($teamList[$guTeamIndexesByTeamID[$playerList[$index]['guTeam']]]['created'])) {
@@ -874,12 +875,16 @@ foreach(array_keys($playerList) as $index) {
 
 			if($teamList[$guTeamIndexesByTeamID[$playerList[$index]['guTeam']]]['leader'] == $playerList[$index]['bzid'])
 				$teamList[$guTeamIndexesByTeamID[$playerList[$index]['guTeam']]]['leader'] = '';
+
+			$playerList[$index]['inviteToTeam'] = $guTeamIndexesByTeamID[$playerList[$index]['guTeam']];
 		} else {
 			$playerList[$index]['team'] = $guTeamIndexesByTeamID[$playerList[$index]['guTeam']];
 			array_push($teamList[$playerList[$index]['team']]['members'], $index);
 
 			if($teamList[$ducatiTeamIndexesByTeamID[$playerList[$index]['ducatiTeam']]]['leader'] == $playerList[$index]['bzid'])
 				$teamList[$ducatiTeamIndexesByTeamID[$playerList[$index]['ducatiTeam']]]['leader'] = '';
+
+			$playerList[$index]['inviteToTeam'] = $ducatiTeamIndexesByTeamID[$playerList[$index]['ducatiTeam']];
 		}
 	} else if($playerList[$index]['ducatiTeam'] != '') {
 		$playerList[$index]['team'] = $ducatiTeamIndexesByTeamID[$playerList[$index]['ducatiTeam']];
@@ -1292,6 +1297,16 @@ if(! $bzionConnection->query('DELETE FROM conversations'))
 if(! $bzionConnection->query('ALTER TABLE conversations AUTO_INCREMENT=1'))
 	die("Could not reset index for message conversation data in bzion database.\n");
 
+if(! $bzionConnection->query('DELETE FROM notifications'))
+	die("Could not delete existing notification data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE notifications AUTO_INCREMENT=1'))
+	die("Could not reset index for notification data in bzion database.\n");
+
+if(! $bzionConnection->query('DELETE FROM invitations'))
+	die("Could not delete existing invitation data in bzion database.\n");
+if(! $bzionConnection->query('ALTER TABLE invitations AUTO_INCREMENT=1'))
+	die("Could not reset index for invitation data in bzion database.\n");
+
 if(! $bzionConnection->query('DELETE FROM news'))
 	die("Could not delete existing news data in bzion database.\n");
 if(! $bzionConnection->query('ALTER TABLE news AUTO_INCREMENT=1'))
@@ -1403,6 +1418,17 @@ foreach($teamList as $team)
 	foreach($team['members'] as $bzid)
 		if($bzid != $team['leader'])
 			$team['record']->addMember($playerList[$bzid]['record']->getId());
+
+echo "Done.\n";
+
+// export team invitations
+echo "Exporting team invites... ";
+foreach($playerList as $player) {
+	if ($player['inviteToTeam'] !== '') {
+		$invite = Invitation::sendInvite($player['record']->getId(), $teamList[$player['inviteToTeam']]['record']->getId(), null, "This invitation was generated automatically", "1 month");
+		Service::getDispatcher()->dispatch(BZIon\Event\Events::TEAM_INVITE, new BZIon\Event\TeamInviteEvent($invite));
+	}
+}
 
 echo "Done.\n";
 
