@@ -1412,7 +1412,17 @@ echo "Exporting matches... ";
 $ducatiMap = Map::addMap("Ducati");
 $hixMap = Map::addMap("HiX");
 
-foreach($matchesList as $match)
+// Start a transaction so that queries are not sent one-by-one,
+// reducing the time needed to store matches
+$bzionDatabase = Database::getInstance();
+$bzionDatabase->startTransaction();
+
+$i = 1;
+foreach($matchesList as $match) {
+	// Commit all pending queries once every 200 matches
+	if ($i % 200 == 0)
+		$bzionDatabase->commit();
+
 	Match::enterMatch(
 			$teamList[$match['team1ID']]['record']->getId(),
 			$teamList[$match['team2ID']]['record']->getId(),
@@ -1428,6 +1438,12 @@ foreach($matchesList as $match)
 			NULL,
 			$match['map'] == "Ducati" ? $ducatiMap->getId() : $hixMap->getId()
 		);
+
+	$i++;
+}
+
+// Submit any pending queries
+$bzionDatabase->finishTransaction();
 
 echo "Done.\n";
 
