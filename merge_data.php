@@ -1454,9 +1454,20 @@ if(! $bzionConnection->ping() || ! $ducatiConnection->ping() || ! $guConnection-
 // export visits log
 echo "Exporting visits log... ";
 
-foreach($visitsLog as $entry)
+$bzionConnection->autocommit(false);
+$i = 1;
+foreach($visitsLog as $entry) {
+	if ($i % 100 == 0)
+		$bzionConnection->commit();
+
 	if(! $bzionConnection->query('INSERT INTO visits SET player='.$playerList[$entry['bzid']]['record']->getId().', ip="'.$entry['ip'].'", host='.($entry['host'] != '' ? '"'.$entry['host'].'"' : 'NULL').', user_agent="'.$entry['user_agent'].'", timestamp="'.$entry['timestamp'].'"'))
 		die("Failed, unable to insert log entry into BZION database.\n");
+	
+	$i++;
+}
+
+$bzionConnection->commit();
+$bzionConnection->autocommit(true);
 
 echo "Done.\n";
 
