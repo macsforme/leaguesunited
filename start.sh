@@ -9,11 +9,13 @@ function cleanupAndUnlock {
 		rm run/$PORT-plugins.txt
 		rm run/$PORT-map.txt
 		rm run/$PORT-maplist.txt
+		rm run/$PORT-bzfs.txt
 	done
 
 	if [[ $BZLURPLYSRVPORT ]]
 	then
 		rm run/$BZLURPLYSRVPORT-pid.txt
+		rm run/$BZLURPLYSRVPORT-bzfs.txt
 	fi
 
 	# Release lock file
@@ -87,13 +89,22 @@ fi
 			then
 				BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
 			fi
+			echo -publictitle \"$BZLUSRVTITLE\" > run/$PORT-bzfs.txt
 
 			if [[ $BZLUSRVADDR ]]
 			then
-				BZLUSRVADDRARG="-publicaddr $BZLUSRVADDR:$PORT"
+				BZLUSRVADDRARG="$BZLUSRVADDR:$PORT"
 			else
 				BZLUSRVADDRARG=
 			fi
+
+			echo -publickey $BZLUSRVKEY >> run/$PORT-bzfs.txt
+
+			echo -p $PORT >> run/$PORT-bzfs.txt
+
+			echo -pidfile run/$PORT-pid.txt >> run/$PORT-bzfs.txt
+
+			echo -conf support/bzfs.txt >> run/$PORT-bzfs.txt
 
 			echo -e "[leagueOverSeer]" > run/$PORT-plugins.txt
 			echo -e "\tROTATIONAL_LEAGUE=true" >> run/$PORT-plugins.txt
@@ -111,20 +122,18 @@ fi
 			else
 				BZLUMAPARG="-world support/$BZLUMAP.bzw"
 			fi
+			echo $BZLUMAPARG >> run/$PORT-bzfs.txt
 
-			# Start the server
-			$BZBINDIR/bzfs \
-				-p $PORT \
-				-publickey $BZLUSRVKEY \
-				-publictitle "$BZLUSRVTITLE" \
-				$BZLUSRVADDRARG \
-				-pidfile run/$PORT-pid.txt \
-				-conf support/bzfs.txt \
-				$BZLUMAPARG \
+			echo \
 				-loadplugin $BZLIBDIR/leagueOverSeer.so,run/$PORT-plugins.txt \
 				-loadplugin $BZLIBDIR/mapchange.so,run/$PORT-plugins.txt \
 				-loadplugin $BZLIBDIR/TimeLimit.so,15,20,30 \
-				-loadplugin $BZLIBDIR/logDetail.so \
+				-loadplugin $BZLIBDIR/logDetail.so >> run/$PORT-bzfs.txt
+
+			# Start the server
+			$BZBINDIR/bzfs \
+				-conf run/$PORT-bzfs.txt \
+				-publicaddr $BZLUSRVADDRARG \
 				>> logs/$PORT.txt \
 				2> logs/errors/$PORT.txt
 
@@ -143,6 +152,7 @@ fi
 			then
 				BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
 			fi
+			echo -publictitle \"$BZLUSRVTITLE\" > run/$BZLURPLYSRVPORT-bzfs.txt
 
 			if [[ $BZLUSRVADDR ]]
 			then
@@ -151,16 +161,22 @@ fi
 				BZLUSRVADDRARG=
 			fi
 
+			echo -p $BZLURPLYSRVPORT >> run/$BZLURPLYSRVPORT-bzfs.txt
+
+			echo -publickey $BZLUSRVKEY >> run/$BZLURPLYSRVPORT-bzfs.txt
+
+			echo -pidfile run/$BZLURPLYSRVPORT-pid.txt >> run/$BZLURPLYSRVPORT-bzfs.txt
+
+			echo -conf support/bzfs.txt >> run/$BZLURPLYSRVPORT-bzfs.txt
+
+			echo -loadplugin $BZLIBDIR/logDetail.so >> run/$BZLURPLYSRVPORT-bzfs.txt
+
+			echo -replay >> run/$BZLURPLYSRVPORT-bzfs.txt
+
 			# Start the server
 			$BZBINDIR/bzfs \
-				-p $BZLURPLYSRVPORT \
-				-publickey $BZLUSRVKEY \
-				-publictitle "$BZLUSRVTITLE" \
+				-conf run/$BZLURPLYSRVPORT-bzfs.txt \
 				$BZLUSRVADDRARG \
-				-pidfile run/$BZLURPLYSRVPORT-pid.txt \
-				-conf support/bzfs.txt \
-				-replay \
-				-loadplugin $BZLIBDIR/logDetail.so \
 				>> logs/$BZLURPLYSRVPORT.txt \
 				2> logs/errors/$BZLURPLYSRVPORT.txt
 
