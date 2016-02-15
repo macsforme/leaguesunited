@@ -27,3 +27,7 @@
 # piece of information (usually city, state or country; for example,
 # "California," "New Jersey," "London," "Berlin," "Sydney," etc.
 #BZLUSRVLOC=""
+
+# Logs are saved in logDetail format by default; if you prefer debugging
+# output, specify the debug level here by number (1, 2, 3 or 4)
+#BZLUDBGLVL=

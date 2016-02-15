@@ -55,6 +55,7 @@ BZLUSRVADDR=""
 BZLURPLYSRVPORT=5195
 BZLUSRVPORT="5196 5197 5198"
 BZLUSRVLOC=""
+BZLUDBGLVL=""
 
 if [[ -f config.txt ]]
 then
@@ -110,7 +111,7 @@ fi
 			echo -e "\tROTATIONAL_LEAGUE=true" >> run/$PORT-plugins.txt
 			echo -e "\tMAPCHANGE_PATH=run/$PORT-map.txt" >> run/$PORT-plugins.txt
 			echo -e "\tLEAGUE_OVERSEER_URL=http://leaguetest.fairserve.net/api/leagueOverseer" >> run/$PORT-plugins.txt
-			echo -e "\tDEBUG_LEVEL=1" >> run/$PORT-plugins.txt
+			echo -e "\tDEBUG_LEVEL=0" >> run/$PORT-plugins.txt
 			echo -e "" >> run/$PORT-plugins.txt
 			echo -e "[mapchange]" >> run/$PORT-plugins.txt
 			echo -e "\tConfigurationFile=run/$PORT-maplist.txt" >> run/$PORT-plugins.txt
@@ -127,8 +128,23 @@ fi
 			echo \
 				-loadplugin $BZLIBDIR/leagueOverSeer.so,run/$PORT-plugins.txt \
 				-loadplugin $BZLIBDIR/mapchange.so,run/$PORT-plugins.txt \
-				-loadplugin $BZLIBDIR/TimeLimit.so,15,20,30 \
-				-loadplugin $BZLIBDIR/logDetail.so >> run/$PORT-bzfs.txt
+				-loadplugin $BZLIBDIR/TimeLimit.so,15,20,30 >> run/$PORT-bzfs.txt
+
+			if [[ "$BZLUDBGLVL" == 1 ]]
+			then
+				echo -d >> run/$PORT-bzfs.txt
+			elif [[ "$BZLUDBGLVL" == 2 ]]
+			then
+				echo -dd >> run/$PORT-bzfs.txt
+			elif [[ "$BZLUDBGLVL" == 3 ]]
+			then
+				echo -ddd >> run/$PORT-bzfs.txt
+			elif [[ "$BZLUDBGLVL" == 4 ]]
+			then
+				echo -dddd >> run/$PORT-bzfs.txt
+			else
+				echo -loadplugin $BZLIBDIR/logDetail.so >> run/$PORT-bzfs.txt
+			fi
 
 			# Start the server
 			$BZBINDIR/bzfs \
@@ -169,7 +185,21 @@ fi
 
 			echo -conf support/bzfs.txt >> run/$BZLURPLYSRVPORT-bzfs.txt
 
-			echo -loadplugin $BZLIBDIR/logDetail.so >> run/$BZLURPLYSRVPORT-bzfs.txt
+			if [[ "$BZLUDBGLVL" == 1 ]]
+			then
+				echo -d >> run/$BZLURPLYSRVPORT-bzfs.txt
+			elif [[ "$BZLUDBGLVL" == 2 ]]
+			then
+				echo -dd >> run/$BZLURPLYSRVPORT-bzfs.txt
+			elif [[ "$BZLUDBGLVL" == 3 ]]
+			then
+				echo -ddd >> run/$BZLURPLYSRVPORT-bzfs.txt
+			elif [[ "$BZLUDBGLVL" == 4 ]]
+			then
+				echo -dddd >> run/$BZLURPLYSRVPORT-bzfs.txt
+			else
+				echo -loadplugin $BZLIBDIR/logDetail.so >> run/$BZLURPLYSRVPORT-bzfs.txt
+			fi
 
 			echo -replay >> run/$BZLURPLYSRVPORT-bzfs.txt
 
