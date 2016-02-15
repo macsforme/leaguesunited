@@ -82,7 +82,7 @@ fi
 				echo $BZLUMAP > run/$PORT-map.txt
 			fi
 
-			BZLUSRVTITLE="Official Leagues United Match Server :: $BZLUMAP"
+			BZLUSRVTITLE="Testing Leagues United Match Server :: $BZLUMAP"
 			if [[ $BZLUSRVLOC ]]
 			then
 				BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
@@ -98,7 +98,7 @@ fi
 			echo -e "[leagueOverSeer]" > run/$PORT-plugins.txt
 			echo -e "\tROTATIONAL_LEAGUE=true" >> run/$PORT-plugins.txt
 			echo -e "\tMAPCHANGE_PATH=run/$PORT-map.txt" >> run/$PORT-plugins.txt
-			echo -e "\tLEAGUE_OVERSEER_URL=http://leaguesunited.org/api/leagueOverseer" >> run/$PORT-plugins.txt
+			echo -e "\tLEAGUE_OVERSEER_URL=http://leaguetest.fairserve.net/api/leagueOverseer" >> run/$PORT-plugins.txt
 			echo -e "\tDEBUG_LEVEL=1" >> run/$PORT-plugins.txt
 			echo -e "" >> run/$PORT-plugins.txt
 			echo -e "[mapchange]" >> run/$PORT-plugins.txt
@@ -138,7 +138,7 @@ fi
 		while [[ -e run/main.keepalive ]]
 		do
 			# Prepare configuration
-			BZLUSRVTITLE="Official Leagues United Replay Server"
+			BZLUSRVTITLE="Testing Leagues United Replay Server"
 			if [[ $BZLUSRVLOC ]]
 			then
 				BZLUSRVTITLE="$BZLUSRVTITLE :: $BZLUSRVLOC"
