@@ -146,6 +146,8 @@ fi
 				echo -loadplugin $BZLIBDIR/logDetail.so >> run/$PORT-bzfs.txt
 			fi
 
+			echo -ts >> run/$PORT-bzfs.txt
+
 			# Start the server
 			$BZBINDIR/bzfs \
 				-conf run/$PORT-bzfs.txt \
@@ -200,6 +202,8 @@ fi
 			else
 				echo -loadplugin $BZLIBDIR/logDetail.so >> run/$BZLURPLYSRVPORT-bzfs.txt
 			fi
+
+			echo -ts >> run/$BZLURPLYSRVPORT-bzfs.txt
 
 			echo -replay >> run/$BZLURPLYSRVPORT-bzfs.txt
 
