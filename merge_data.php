@@ -168,6 +168,9 @@ function bbCodeToMarkDown($data) {
 	$data = preg_replace("/\[(?:style|STYLE)[^\]]*?\]\s*((?:.|\n)*?)\s*\[\/(?:style|STYLE)\]/", "*$1*", $data);
 	$data = preg_replace("/\[(?:size|SIZE)[^\]]*?\]\s*((?:.|\n)*?)\s*\[\/(?:size|SIZE)\]/", "*$1*", $data);
 
+	// fix newlines
+	$data = preg_replace("/(\r?\n)/", "  $1", $data);
+
 	return $data;
 }
 
