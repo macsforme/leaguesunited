@@ -1438,7 +1438,17 @@ echo "Exporting matches... ";
 $ducatiMap = Map::addMap("Ducati");
 $hixMap = Map::addMap("HiX");
 
-foreach($matchesList as $match)
+// Start a transaction so that queries are not sent one-by-one,
+// reducing the time needed to store matches
+$bzionDatabase = Database::getInstance();
+$bzionDatabase->startTransaction();
+
+$i = 1;
+foreach($matchesList as $match) {
+	// Commit all pending queries once every 200 matches
+	if ($i % 200 == 0)
+		$bzionDatabase->commit();
+
 	Match::enterMatch(
 			$teamList[$match['team1ID']]['record']->getId(),
 			$teamList[$match['team2ID']]['record']->getId(),
@@ -1455,6 +1465,12 @@ foreach($matchesList as $match)
 			$match['map'] == "Ducati" ? $ducatiMap->getId() : $hixMap->getId()
 		);
 
+	$i++;
+}
+
+// Submit any pending queries
+$bzionDatabase->finishTransaction();
+
 echo "Done.\n";
 
 // that probably took a while, so let's verify our database connections
@@ -1464,9 +1480,20 @@ if(! $bzionConnection->ping() || ! $ducatiConnection->ping() || ! $guConnection-
 // export visits log
 echo "Exporting visits log... ";
 
-foreach($visitsLog as $entry)
+$bzionConnection->autocommit(false);
+$i = 1;
+foreach($visitsLog as $entry) {
+	if ($i % 100 == 0)
+		$bzionConnection->commit();
+
 	if(! $bzionConnection->query('INSERT INTO visits SET player='.$playerList[$entry['bzid']]['record']->getId().', ip="'.$entry['ip'].'", host='.($entry['host'] != '' ? '"'.$entry['host'].'"' : 'NULL').', user_agent="'.$entry['user_agent'].'", timestamp="'.$entry['timestamp'].'"'))
 		die("Failed, unable to insert log entry into BZION database.\n");
+	
+	$i++;
+}
+
+$bzionConnection->commit();
+$bzionConnection->autocommit(true);
 
 echo "Done.\n";
 
