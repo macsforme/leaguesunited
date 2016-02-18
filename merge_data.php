@@ -1604,22 +1604,6 @@ foreach($privateMessages as $message) {
 	}
 	if(array_key_exists($thisHash, $conversationsByHash)) {
 		$thisConversation = $conversationsByHash[$thisHash];
-
-/*
-		$teamNames = Array();
-		foreach($teamRecipientIndexes as $index)
-			array_push($teamNames, $teamList[$index]['name']);
-		$playerNames = Array();
-		foreach($individualRecipientBZIDs as $bzid)
-			if($bzid == -4)
-				array_push($playerNames, $dummyMessageTarget->getUsername());
-			else
-				array_push($playerNames, $playerList[$bzid]['name']);
-		echo "NOTICE: re-used a conversation for message on ".
-			date("Y-m-d H:i:s", $message['timestamp'])." to team(s) ".
-			(count($teamNames) == 0 ? "(none)" : implode(", ", $teamNames))." and players ".
-			(count($playerNames) == 0 ? "(none)": implode(", ", $playerNames))."... ";
-*/
 	} else {
 		$thisConversation = Conversation::createConversation($message['subject'], $playerList[$message['author']]['record']->getId(), $individualRecipients);
 
