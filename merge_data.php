@@ -678,13 +678,13 @@ while($resultArray != NULL) {
 		$playerList[$bzid]['status'] = "active";
 
 	// for duplicate values, use the value from the league joined first
-	if($playerList[$bzid]['location'] != '' || strtotime($playerList[$bzid]['joined']) == strtotime($resultArray['joined']))
+	if($playerList[$bzid]['location'] == '' || strtotime($playerList[$bzid]['joined']) > strtotime($resultArray['joined']))
 		$playerList[$bzid]['location'] = $guCountries[$resultArray['location']];
 
-	if($playerList[$bzid]['avatar'] != '' || ($resultArray['logo_url'] != "NULL" && $resultArray['logo_url'] != '' && strtotime($playerList[$bzid]['joined']) == strtotime($resultArray['joined'])))
+	if($playerList[$bzid]['avatar'] == '' || ($resultArray['logo_url'] != "NULL" && $resultArray['logo_url'] != '' && strtotime($playerList[$bzid]['joined']) > strtotime($resultArray['joined'])))
 		$playerList[$bzid]['avatar'] = $resultArray['logo_url'];
 
-	if($playerList[$bzid]['last_login'] == '' || strtotime($playerList[$bzid]['joined']) == strtotime($resultArray['joined']))
+	if($playerList[$bzid]['last_login'] == '' || strtotime($playerList[$bzid]['last_login']) < strtotime($resultArray['last_login']))
 		$playerList[$bzid]['last_login'] = $resultArray['last_login'];
 
 	if($playerList[$bzid]['description'] != '')
