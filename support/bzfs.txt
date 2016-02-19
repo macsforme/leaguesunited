@@ -5,7 +5,7 @@
 -timemanual
 -recdir recordings
 
--srvmsg "Welcome to this testing server for BZFlag Leagues United. To play here, you"
+-srvmsg "Welcome to this official server for BZFlag Leagues United. To play here, you"
 -srvmsg "must be in the BZFlag Leagues United spawn group. Please contact an"
 -srvmsg "administrator if you need access."
 -srvmsg ""
