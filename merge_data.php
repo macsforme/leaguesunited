@@ -1559,10 +1559,12 @@ foreach($privateMessages as $message) {
 	array_push($individualRecipients, $playerList[$message['author']]['record']);
 
 	$teamRecipientIndexes = Array();
+/*
 	foreach($message['ducati_team_recipients'] as $teamID)
 		array_push($teamRecipientIndexes, $ducatiTeamIndexesByTeamID[$teamID]);
 	foreach($message['gu_team_recipients'] as $teamID)
 		array_push($teamRecipientIndexes, $guTeamIndexesByTeamID[$teamID]);
+*/
 
 	foreach($message['team_member_recipients'] as $recipientBZID) {
 		if(in_array($recipientBZID, $message['individual_recipients'])) // don't duplicate individual/team recipients
@@ -1578,7 +1580,7 @@ foreach($privateMessages as $message) {
 			}
 		}
 
-		if(! $inATeam)
+//		if(! $inATeam)
 			array_push($individualRecipients, $playerList[$recipientBZID]['record']);
 	}
 
@@ -1607,9 +1609,10 @@ foreach($privateMessages as $message) {
 	} else {
 		$thisConversation = Conversation::createConversation($message['subject'], $playerList[$message['author']]['record']->getId(), $individualRecipients);
 
-		foreach($teamRecipientIndexes as $teamIndex)
+		foreach($teamRecipientIndexes as $teamIndex) {
 			$thisConversation->addMember($teamList[$teamIndex]['record']);
-
+			die("Failed, team recipients are supposed to be disabled, but one was encountered.\n");
+		}
 		$conversationsByHash[$thisHash] = $thisConversation;
 	}
 
