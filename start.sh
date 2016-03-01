@@ -16,6 +16,7 @@ function cleanupAndUnlock {
 	then
 		rm run/$BZLURPLYSRVPORT-pid.txt
 		rm run/$BZLURPLYSRVPORT-bzfs.txt
+		rm run/$BZLURPLYSRVPORT-plugins.txt
 	fi
 
 	# Release lock file
@@ -56,6 +57,7 @@ BZLURPLYSRVPORT=5195
 BZLUSRVPORT="5196 5197 5198"
 BZLUSRVLOC=""
 BZLUDBGLVL=""
+BZLUBANFILE=support/bans.txt
 
 if [[ -f config.txt ]]
 then
@@ -116,6 +118,9 @@ fi
 			echo -e "[mapchange]" >> run/$PORT-plugins.txt
 			echo -e "\tConfigurationFile=run/$PORT-maplist.txt" >> run/$PORT-plugins.txt
 			echo -e "\tOutputFile=run/$PORT-map.txt" >> run/$PORT-plugins.txt
+			echo -e "" >> run/$PORT-plugins.txt
+			echo -e "[ServerControl]" >> run/$PORT-plugins.txt
+			echo -e "\tBanFile=$BZLUBANFILE" >> run/$PORT-plugins.txt
 
 			if [[ $BZLUMAP == "Ducati" ]]
 			then
@@ -128,6 +133,7 @@ fi
 			echo \
 				-loadplugin $BZLIBDIR/leagueOverSeer.so,run/$PORT-plugins.txt \
 				-loadplugin $BZLIBDIR/mapchange.so,run/$PORT-plugins.txt \
+				-loadplugin $BZLIBDIR/serverControl.so,run/$PORT-plugins.txt \
 				-loadplugin $BZLIBDIR/TimeLimit.so,15,20,30 >> run/$PORT-bzfs.txt
 
 			if [[ "$BZLUDBGLVL" == 1 ]]
@@ -147,6 +153,8 @@ fi
 			fi
 
 			echo -ts >> run/$PORT-bzfs.txt
+
+			echo -banfile $BZLUBANFILE >> run/$PORT-bzfs.txt
 
 			# Start the server
 			$BZBINDIR/bzfs \
@@ -187,6 +195,11 @@ fi
 
 			echo -conf support/bzfs.txt >> run/$BZLURPLYSRVPORT-bzfs.txt
 
+                        echo -e "[ServerControl]" >> run/$BZLURPLYSRVPORT-plugins.txt
+                        echo -e "\tBanFile=$BZLUBANFILE" >> run/$BZLURPLYSRVPORT-plugins.txt
+
+			echo -loadplugin $BZLIBDIR/serverControl.so,run/$BZLURPLYSRVPORT-plugins.txt >> run/$BZLURPLYSRVPORT-bzfs.txt
+
 			if [[ "$BZLUDBGLVL" == 1 ]]
 			then
 				echo -d >> run/$BZLURPLYSRVPORT-bzfs.txt
@@ -204,6 +217,8 @@ fi
 			fi
 
 			echo -ts >> run/$BZLURPLYSRVPORT-bzfs.txt
+
+			echo -banfile $BZLUBANFILE >> run/$BZLURPLYSRVPORT-bzfs.txt
 
 			echo -replay >> run/$BZLURPLYSRVPORT-bzfs.txt
 

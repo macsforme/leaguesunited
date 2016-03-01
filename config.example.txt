@@ -31,3 +31,7 @@
 # Logs are saved in logDetail format by default; if you prefer debugging
 # output, specify the debug level here by number (1, 2, 3 or 4)
 #BZLUDBGLVL=
+
+# League match servers use a shared ban file; if you want the match servers to
+# share a ban file with your other servers as well, specify the location here
+#BZLUBANFILE=support/bans.txt
