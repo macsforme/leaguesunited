@@ -1616,9 +1616,9 @@ foreach($privateMessages as $message) {
 		$conversationsByHash[$thisHash] = $thisConversation;
 	}
 
-	$thisConversation->sendMessage($playerList[$message['author']]['record'], $message['message']);
+	$thisMessage = $thisConversation->sendMessage($playerList[$message['author']]['record'], $message['message']);
 
-	$queryResult = $bzionConnection->query('UPDATE messages SET timestamp="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE conversation_to='.$thisConversation->getId());
+	$queryResult = $bzionConnection->query('UPDATE messages SET timestamp="'.date("Y-m-d H:i:s", $message['timestamp']).'" WHERE id='.$thisMessage->getId());
 	if(! $queryResult)
 		die("Failed, could not set date for message entry.\n");
 
