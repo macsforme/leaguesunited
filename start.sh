@@ -73,7 +73,7 @@ fi
 	for PORT in $BZLUSRVPORT
 	do
 		# Create map list
-		echo -e "HiX HiX\nDucati Ducati\nBabel Babel\nPillbox Pillbox" > run/$PORT-maplist.txt
+		echo -e "HiX HiX\nDucati Ducati\nDucatiMini DucatiMini\nBabel Babel\nPillbox Pillbox" > run/$PORT-maplist.txt
 
 		# Start loop
 		while [[ -e run/main.keepalive ]]
@@ -125,6 +125,9 @@ fi
 			if [[ $BZLUMAP == "Ducati" ]]
 			then
 				BZLUMAPARG="-conf support/Ducati.conf"
+			elif [[ $BZLUMAP == "DucatiMini" ]]
+			then
+				BZLUMAPARG="-conf support/DucatiMini.conf"
 			else
 				BZLUMAPARG="-world support/$BZLUMAP.bzw"
 			fi
