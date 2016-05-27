@@ -7,7 +7,7 @@ from the "release" branch of https://github.com/allejo/LeagueOverseer. Once
 you have built and installed those two plugins, obtain this directory from the
 git repository in the following way:
 
-git clone -b serverconfig https://github.com/macsforme/leaguesunited
+git clone -b serverconfig https://github.com/allejo/leaguesunited
 
 Once you have obtained this directory, please copy the config.example.txt file
 to "config.txt," and edit it with your bzfs list server key, your server
@@ -28,11 +28,18 @@ or removing the run directory and trying to start it again.
 
 From time to time, the configuration may be updated in the git repository. To
 update your servers to the latest configuration, execute stop.sh, followed by
-update.sh, followed by start.sh. You cannot update the servers while they are
-running, so if possible, wait until none of your servers have players on them.
+"git pull" (you may need to re-enter your GitHub username and password),
+followed by start.sh. You should not update the servers while they are running,
+so if possible, wait until none of your servers have players on them.
 
 To maintain the integrity of BZFlag Leagues United servers, and to maintain
 consistency across all servers, please do not deviate from the standard
 configuration provided here. If you think something needs to be changed,
 contact the league administrators so they can decide on it and so they can
 update the servers universally.
+
+NOTE: The original public GitHub repository is no longer in use. To migrate to
+the new private repository, shut down your servers as described above, and then
+enter the following shell command to update to the new address:
+
+git remote set-url origin https://github.com/allejo/leaguesunited.git
